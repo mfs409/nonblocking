@@ -45,6 +45,7 @@ FILENAMES += WFArrayHashSet WFArrayFSet WFArrayOp
 FILENAMES += AdaptiveArrayHashSet AdaptiveArrayHashSetOpt
 
 FILENAMES += SOHashSet
+FILENAMES += ConcurrentHashSet
 
 FILENAMES += BenchOpsThread CheckingThread ResizingThread
 FILENAMES += ISet LFListNode WFListNode

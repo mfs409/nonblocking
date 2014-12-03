@@ -264,6 +264,9 @@ class SetBench
         else if (ALG_NAME.equals("SO")) {
             SetBench.set = new SOHashSet();
         }
+        else if (ALG_NAME.equals("Std")) {
+            SetBench.set = new ConcurrentHashSet();
+        }
         else {
             SetBench.set = new LFListHashSet();
         }
