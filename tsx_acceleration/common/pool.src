@@ -1,0 +1,76 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2011
+// Lehigh University
+// Computer Science and Engineering Department
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+//    * Redistributions of source code must retain the above copyright notice,
+//      this list of conditions and the following disclaimer.
+//
+//    * Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the distribution.
+//
+//    * Neither the name of the University of Rochester nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+
+__thread TYPE * _list_head = NULL;
+__thread TYPE * _list_tail = NULL;
+__thread TYPE * _pool = NULL;
+__thread unsigned int _pool_counter = 0;
+__thread unsigned int _list_counter = 0;
+
+/** Fetch an item from pool. */
+inline static TYPE * get_node_from_pool()
+{
+    // allocate new pool if the current pool is full
+    if (_pool == NULL || _pool_counter == POOL_SIZE) {
+        _pool = (TYPE*)malloc(sizeof(TYPE) * POOL_SIZE);
+        _pool_counter = 0;
+    }
+    return &_pool[_pool_counter++];
+}
+
+inline static TYPE * get()
+{
+    // get item from pool if freelist is empty
+    if (_list_counter <= LIST_SIZE)
+        return get_node_from_pool();
+    // get item from the from freelist
+    TYPE * result = _list_head;
+    _list_head = _list_head->next;
+    _list_counter--;
+    return result;
+}
+
+inline static void put(TYPE * item)
+{
+    if (_list_counter == 0) {
+        _list_head = item;
+        _list_tail = item;
+    }
+    else {
+        _list_tail->next = item;
+        _list_tail = item;
+    }
+    _list_counter++;
+}
+
